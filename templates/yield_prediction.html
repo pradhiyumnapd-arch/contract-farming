@@ -1,0 +1,440 @@
+{% extends "base.html" %}
+
+{% block title %}Yield Prediction{% endblock %}
+
+{% block content %}
+
+<style>
+.yield-page {
+    width: 100%;
+    max-width: 900px;
+}
+
+.yield-header {
+    margin-bottom: 30px;
+}
+
+.yield-header h1 {
+    margin: 0 0 8px 0;
+    font-size: 32px;
+}
+
+.yield-header p {
+    margin: 0;
+    color: #687468;
+    font-size: 16px;
+}
+
+.yield-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+}
+
+.yield-card {
+    background: white;
+    padding: 28px;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+}
+
+.yield-card h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.yield-form-group {
+    margin-bottom: 18px;
+}
+
+.yield-form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 7px;
+}
+
+.yield-form-group input,
+.yield-form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d7ddd5;
+    border-radius: 8px;
+    font-size: 15px;
+    background: white;
+    color: #263326;
+}
+
+.yield-button {
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 8px;
+    background: var(--forest);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+.yield-button:hover {
+    background: #19372d;
+}
+
+/* =========================
+   FIND CONTRACT BUTTON
+========================= */
+
+.contract-button {
+    display: block;
+    width: 100%;
+    padding: 13px;
+    margin-top: 15px;
+    border-radius: 8px;
+    background: var(--gold);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    box-sizing: border-box;
+}
+
+.contract-button:hover {
+    background: #b87820;
+}
+
+.yield-result {
+    margin-top: 20px;
+    padding: 20px;
+    background: #eef7eb;
+    border-radius: 12px;
+}
+
+.yield-result h3 {
+    margin-top: 0;
+}
+
+.yield-result-value {
+    font-size: 32px;
+    font-weight: 600;
+    margin: 8px 0;
+    color: var(--forest);
+}
+
+.yield-unit {
+    color: #687468;
+}
+
+.yield-production {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #d9e2d7;
+}
+
+.yield-info {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f7f9f6;
+    border-radius: 10px;
+    color: #667066;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+@media (max-width: 750px) {
+    .yield-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Yield estimator refinement */
+.yield-page { max-width:1250px; }
+.yield-header { padding:4px 0 22px; }
+.yield-layout { grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr); gap:22px; align-items:start; }
+.yield-card { padding:27px; }
+.yield-form-group { margin-bottom:17px; }
+.yield-form-group label { color:#40564a; font-size:13px; margin-bottom:8px; }
+.yield-form-group input,.yield-form-group select { min-height:45px; }
+.yield-result { border:1px solid #dcebdd; background:linear-gradient(140deg,#eff8ef,#f8fbf6); border-radius:15px; }
+.yield-result-value { font-size:38px; letter-spacing:-1px; }
+@media(max-width:850px){.yield-layout{grid-template-columns:1fr}}
+
+</style>
+
+<div class="yield-page">
+
+    <div class="yield-header">
+        <h1>🌾 Yield Prediction</h1>
+
+        <p>
+            Estimate your expected crop yield using historical agricultural
+            data and farm conditions.
+        </p>
+    </div>
+
+    <div class="yield-layout">
+
+        <!-- =========================
+             FARM INFORMATION
+        ========================== -->
+
+        <div class="yield-card">
+
+            <h2>Farm Information</h2>
+
+            <form method="POST">
+
+                <!-- CROP -->
+                <div class="yield-form-group">
+                    <label>Crop</label>
+
+                    <select name="crop" required>
+
+                        <option value="">
+                            Select Crop
+                        </option>
+
+                        {% for crop_name in yield_crops %}
+
+                            <option
+                                value="{{ crop_name }}"
+                                {% if crop == crop_name %}selected{% endif %}
+                            >
+                                {{ crop_name }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+                </div>
+
+                <!-- CROP YEAR -->
+                <div class="yield-form-group">
+
+                    <label>Crop Year</label>
+
+                    <input
+                        type="number"
+                        name="crop_year"
+                        value="{{ crop_year or '2026' }}"
+                        min="2000"
+                        max="2100"
+                        required
+                        placeholder="Example: 2026"
+                    >
+
+                </div>
+
+                <!-- SEASON -->
+                <div class="yield-form-group">
+
+                    <label>Season</label>
+
+                    <select name="season" required>
+
+                        <option value="">
+                            Select Season
+                        </option>
+
+                        {% for season_name in yield_seasons %}
+
+                            <option
+                                value="{{ season_name }}"
+                                {% if season == season_name %}selected{% endif %}
+                            >
+                                {{ season_name }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <!-- STATE -->
+                <div class="yield-form-group">
+
+                    <label>State</label>
+
+                    <select name="state" required>
+
+                        <option value="">
+                            Select State
+                        </option>
+
+                        {% for state_name in yield_states %}
+
+                            <option
+                                value="{{ state_name }}"
+                                {% if state == state_name %}selected{% endif %}
+                            >
+                                {{ state_name }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <!-- FARM AREA -->
+                <div class="yield-form-group">
+
+                    <label>Farm Area (hectares)</label>
+
+                    <input
+                        type="number"
+                        name="farm_area"
+                        value="{{ farm_area or '' }}"
+                        step="0.01"
+                        min="0.01"
+                        required
+                        placeholder="Example: 2.5"
+                    >
+
+                </div>
+
+                <!-- RAINFALL -->
+                <div class="yield-form-group">
+
+                    <label>Annual Rainfall (mm)</label>
+
+                    <input
+                        type="number"
+                        name="rainfall"
+                        value="{{ rainfall or '' }}"
+                        step="0.1"
+                        min="0"
+                        required
+                        placeholder="Example: 900"
+                    >
+
+                </div>
+
+                <!-- FERTILIZER -->
+                <div class="yield-form-group">
+
+                    <label>Fertilizer Used</label>
+
+                    <input
+                        type="number"
+                        name="fertilizer"
+                        value="{{ fertilizer or '' }}"
+                        step="0.01"
+                        min="0"
+                        required
+                        placeholder="Example: 1000"
+                    >
+
+                </div>
+
+                <!-- PESTICIDE -->
+                <div class="yield-form-group">
+
+                    <label>Pesticide Used</label>
+
+                    <input
+                        type="number"
+                        name="pesticide"
+                        value="{{ pesticide or '' }}"
+                        step="0.01"
+                        min="0"
+                        required
+                        placeholder="Example: 50"
+                    >
+
+                </div>
+
+                <!-- BUTTON -->
+                <button
+                    type="submit"
+                    class="yield-button"
+                >
+                    Predict Yield
+                </button>
+
+            </form>
+
+        </div>
+
+        <!-- =========================
+             PREDICTION RESULT
+        ========================== -->
+
+        <div class="yield-card">
+
+            <h2>Prediction Result</h2>
+
+            {% if prediction is not none %}
+
+                <div class="yield-result">
+
+                    <h3>Estimated Yield</h3>
+
+                    <div class="yield-result-value">
+                        {{ prediction }}
+                    </div>
+
+                    <div class="yield-unit">
+                        Yield per unit area
+                    </div>
+
+                    <div class="yield-production">
+
+                        <strong>
+                            Total Expected Production
+                        </strong>
+
+                        <div class="yield-result-value">
+                            {{ total_production }}
+                        </div>
+
+                        <div class="yield-unit">
+                            Based on your farm area
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- =========================
+                     SEARCH CONTRACTS
+                ========================== -->
+
+                <a
+                    href="{{ url_for(
+                        'search_apply',
+                        crop=crop,
+                        farm_area=farm_area
+                    ) }}"
+                    class="contract-button"
+                >
+                    🤝 Find Contracts for {{ crop }}
+                </a>
+
+            {% else %}
+
+                <div class="yield-info">
+
+                    Enter your farm information on the left
+                    and click <strong>Predict Yield</strong>.
+
+                    <br><br>
+
+                    The machine learning model will estimate
+                    crop yield using historical agricultural data
+                    including crop, year, season, state, farm area,
+                    rainfall, fertilizer and pesticide usage.
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

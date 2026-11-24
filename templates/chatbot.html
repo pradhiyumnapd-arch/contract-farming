@@ -1,0 +1,1584 @@
+{% extends "base.html" %}
+
+{% block title %}Farming Assistant{% endblock %}
+
+{% block content %}
+
+<style>
+
+    /* =========================================================
+       FULL-WIDTH CHATBOT PAGE
+    ========================================================= */
+
+    /*
+       Your base.html may limit .main to around 980px.
+       This allows ONLY the chatbot page to use the available
+       screen width without changing other pages.
+    */
+    .main:has(.assistant-page) {
+        max-width: none !important;
+        width: auto;
+    }
+
+    .assistant-page {
+        width: 100%;
+        max-width: 1500px;
+        margin: 0 auto;
+        box-sizing: border-box;
+    }
+
+
+    /* =========================================================
+       PAGE HEADER
+    ========================================================= */
+
+    .assistant-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 30px;
+        margin-bottom: 24px;
+    }
+
+    .assistant-heading {
+        min-width: 0;
+    }
+
+    .assistant-heading .eyebrow {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.6px;
+        text-transform: uppercase;
+        color: var(--clay);
+        margin-bottom: 7px;
+    }
+
+    .assistant-heading h1 {
+        margin: 0 0 8px;
+        font-family: "Fraunces", serif;
+        font-size: 40px;
+        line-height: 1.05;
+        color: var(--ink);
+    }
+
+    .assistant-heading p {
+        margin: 0;
+        max-width: 720px;
+        color: #68736A;
+        font-size: 13px;
+        line-height: 1.65;
+    }
+
+    .assistant-status {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #fff;
+        white-space: nowrap;
+        font-size: 11px;
+        color: #59655C;
+        flex-shrink: 0;
+    }
+
+    .online-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #6E9A63;
+        box-shadow: 0 0 0 4px rgba(110,154,99,0.10);
+    }
+
+
+    /* =========================================================
+       MAIN LAYOUT
+    ========================================================= */
+
+    .assistant-layout {
+        display: grid;
+
+        /*
+           Main chat gets most of the available width.
+           Information panel remains compact but comfortable.
+        */
+        grid-template-columns: minmax(0, 1fr) 350px;
+
+        gap: 24px;
+        align-items: stretch;
+        width: 100%;
+    }
+
+
+    /* =========================================================
+       CHAT CARD
+    ========================================================= */
+
+    .chat-card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 12px 35px rgba(32,43,34,0.06);
+        min-width: 0;
+
+        /*
+           Makes the chat card fill the available vertical space
+           more naturally on large screens.
+        */
+        display: flex;
+        flex-direction: column;
+    }
+
+
+    /* =========================================================
+       CHAT HEADER
+    ========================================================= */
+
+    .chat-header {
+        padding: 17px 21px;
+        background: var(--forest);
+        color: white;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 15px;
+        flex-shrink: 0;
+    }
+
+    .chat-identity {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+    }
+
+    .bot-avatar {
+        width: 45px;
+        height: 45px;
+        border-radius: 13px;
+
+        background: rgba(255,255,255,0.11);
+        border: 1px solid rgba(255,255,255,0.16);
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 22px;
+        flex-shrink: 0;
+    }
+
+    .bot-name {
+        font-family: "Fraunces", serif;
+        font-size: 18px;
+        margin-bottom: 3px;
+    }
+
+    .bot-subtitle {
+        font-size: 10px;
+        color: #C9D6C7;
+    }
+
+    .clear-button {
+        border: 1px solid rgba(255,255,255,0.18);
+        background: rgba(255,255,255,0.08);
+        color: white;
+
+        border-radius: 8px;
+        padding: 8px 12px;
+
+        font-family: "Work Sans", sans-serif;
+        font-size: 10px;
+
+        cursor: pointer;
+        transition: 0.2s ease;
+
+        flex-shrink: 0;
+    }
+
+    .clear-button:hover {
+        background: rgba(255,255,255,0.16);
+    }
+
+
+    /* =========================================================
+       CHAT WINDOW
+    ========================================================= */
+
+    .chat-window {
+        height: 570px;
+
+        padding: 26px;
+
+        overflow-y: auto;
+
+        background:
+            linear-gradient(
+                rgba(241,243,234,0.92),
+                rgba(241,243,234,0.92)
+            );
+
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+
+        scroll-behavior: smooth;
+
+        /*
+           Keeps the chat from becoming visually compressed.
+        */
+        min-height: 0;
+    }
+
+
+    /* =========================================================
+       MESSAGE ROW
+    ========================================================= */
+
+    .message-row {
+        display: flex;
+        width: 100%;
+        animation: messageIn 0.22s ease;
+    }
+
+    .message-row.user {
+        justify-content: flex-end;
+    }
+
+    @keyframes messageIn {
+
+        from {
+            opacity: 0;
+            transform: translateY(5px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+    }
+
+
+    /* =========================================================
+       MESSAGE WRAPPER
+    ========================================================= */
+
+    .message-wrapper {
+        max-width: 70%;
+    }
+
+    .message-row.user .message-wrapper {
+        max-width: 68%;
+    }
+
+
+    /* =========================================================
+       MESSAGE
+    ========================================================= */
+
+    .message {
+        padding: 14px 17px;
+
+        border-radius: 13px;
+
+        font-size: 12.5px;
+        line-height: 1.65;
+
+        white-space: pre-line;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .message.bot {
+        background: #fff;
+
+        border: 1px solid var(--line);
+
+        color: var(--ink);
+
+        border-top-left-radius: 4px;
+
+        box-shadow:
+            0 3px 12px rgba(32,43,34,0.035);
+    }
+
+    .message.user {
+        background: var(--forest);
+        color: #fff;
+
+        border-top-right-radius: 4px;
+    }
+
+    .message-label {
+        margin-top: 5px;
+
+        font-size: 9px;
+        color: #879087;
+    }
+
+    .message-row.user .message-label {
+        text-align: right;
+    }
+
+
+    /* =========================================================
+       TYPING INDICATOR
+    ========================================================= */
+
+    .typing {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        height: 17px;
+    }
+
+    .typing span {
+        width: 5px;
+        height: 5px;
+
+        border-radius: 50%;
+
+        background: #77847A;
+
+        animation: typingPulse 1.2s infinite;
+    }
+
+    .typing span:nth-child(2) {
+        animation-delay: 0.18s;
+    }
+
+    .typing span:nth-child(3) {
+        animation-delay: 0.36s;
+    }
+
+    @keyframes typingPulse {
+
+        0%, 60%, 100% {
+            opacity: 0.25;
+            transform: translateY(0);
+        }
+
+        30% {
+            opacity: 1;
+            transform: translateY(-2px);
+        }
+
+    }
+
+
+    /* =========================================================
+       CHAT INPUT
+    ========================================================= */
+
+    .input-section {
+        border-top: 1px solid var(--line);
+
+        background: #fff;
+
+        padding: 16px 19px 17px;
+
+        flex-shrink: 0;
+    }
+
+    .input-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .input-wrapper {
+        position: relative;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .chat-input {
+        width: 100%;
+        box-sizing: border-box;
+
+        border: 1px solid var(--line);
+
+        border-radius: 10px;
+
+        padding: 13px 45px 13px 14px;
+
+        outline: none;
+
+        font-family: "Work Sans", sans-serif;
+        font-size: 12px;
+
+        color: var(--ink);
+
+        background: #F8F9F4;
+
+        transition: 0.2s ease;
+    }
+
+    .chat-input:focus {
+        border-color: var(--gold);
+
+        background: white;
+
+        box-shadow:
+            0 0 0 3px rgba(201,138,43,0.08);
+    }
+
+    .char-count {
+        position: absolute;
+
+        right: 12px;
+        top: 50%;
+
+        transform: translateY(-50%);
+
+        font-size: 9px;
+
+        color: #9AA39B;
+
+        pointer-events: none;
+    }
+
+    .send-button {
+        min-width: 82px;
+        height: 42px;
+
+        border: none;
+        border-radius: 9px;
+
+        background: var(--forest);
+        color: white;
+
+        font-family: "Work Sans", sans-serif;
+
+        font-size: 11px;
+        font-weight: 700;
+
+        cursor: pointer;
+
+        transition: 0.2s ease;
+
+        flex-shrink: 0;
+    }
+
+    .send-button:hover {
+        background: #315848;
+        transform: translateY(-1px);
+    }
+
+    .send-button:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .input-hint {
+        margin-top: 7px;
+
+        color: #929B93;
+
+        font-size: 9px;
+    }
+
+
+    /* =========================================================
+       RIGHT INFORMATION PANEL
+    ========================================================= */
+
+    .assistant-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+
+        min-width: 0;
+    }
+
+    .panel-card {
+        background: #fff;
+
+        border: 1px solid var(--line);
+
+        border-radius: 16px;
+
+        padding: 18px;
+    }
+
+    .panel-card h3 {
+        margin: 0 0 5px;
+
+        font-family: "Fraunces", serif;
+
+        font-size: 18px;
+
+        color: var(--ink);
+    }
+
+    .panel-description {
+        margin: 0 0 15px;
+
+        color: #737D75;
+
+        font-size: 10.5px;
+
+        line-height: 1.5;
+    }
+
+
+    /* =========================================================
+       CAPABILITY LIST
+    ========================================================= */
+
+    .capability {
+        display: flex;
+        align-items: center;
+
+        gap: 10px;
+
+        padding: 9px 0;
+
+        border-bottom: 1px solid #EEF0E9;
+    }
+
+    .capability:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .capability:first-child {
+        padding-top: 0;
+    }
+
+    .capability-icon {
+        width: 32px;
+        height: 32px;
+
+        border-radius: 8px;
+
+        background: var(--paper);
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 14px;
+
+        flex-shrink: 0;
+    }
+
+    .capability-text {
+        font-size: 10.5px;
+
+        color: #4F5C52;
+
+        line-height: 1.35;
+    }
+
+    .capability-text strong {
+        display: block;
+
+        color: var(--ink);
+
+        font-size: 11px;
+
+        margin-bottom: 2px;
+    }
+
+
+    /* =========================================================
+       QUICK QUESTIONS
+    ========================================================= */
+
+    .quick-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .quick-question {
+        width: 100%;
+
+        text-align: left;
+
+        border: 1px solid var(--line);
+
+        background: #F8F9F4;
+
+        color: var(--forest);
+
+        padding: 10px 11px;
+
+        border-radius: 9px;
+
+        font-family: "Work Sans", sans-serif;
+
+        font-size: 10px;
+
+        cursor: pointer;
+
+        transition: 0.18s ease;
+    }
+
+    .quick-question:hover {
+        border-color: var(--gold);
+
+        background: #fff;
+
+        transform: translateX(2px);
+    }
+
+
+    /* =========================================================
+       TOPIC CHIPS
+    ========================================================= */
+
+    .topic-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .topic-chip {
+        padding: 6px 8px;
+
+        border-radius: 999px;
+
+        background: var(--paper);
+
+        color: #536157;
+
+        font-size: 9px;
+
+        border: 1px solid #E2E6DC;
+    }
+
+
+    /* =========================================================
+       LARGE SCREEN
+    ========================================================= */
+
+    @media (min-width: 1400px) {
+
+        .assistant-page {
+            max-width: 1600px;
+        }
+
+        .assistant-layout {
+            grid-template-columns: minmax(0, 1fr) 370px;
+            gap: 28px;
+        }
+
+        .chat-window {
+            height: 600px;
+        }
+
+        .message {
+            font-size: 13px;
+        }
+
+    }
+
+
+    /* =========================================================
+       MEDIUM SCREEN
+    ========================================================= */
+
+    @media (max-width: 1100px) {
+
+        .assistant-layout {
+            grid-template-columns: minmax(0, 1fr) 300px;
+            gap: 18px;
+        }
+
+        .chat-window {
+            height: 520px;
+            padding: 21px;
+        }
+
+        .message-wrapper {
+            max-width: 78%;
+        }
+
+    }
+
+
+    /* =========================================================
+       TABLET
+    ========================================================= */
+
+    @media (max-width: 900px) {
+
+        .assistant-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .assistant-panel {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .assistant-panel .panel-card:last-child {
+            grid-column: 1 / -1;
+        }
+
+    }
+
+
+    /* =========================================================
+       MOBILE
+    ========================================================= */
+
+    @media (max-width: 700px) {
+
+        .assistant-page {
+            max-width: 100%;
+        }
+
+        .assistant-header {
+            align-items: flex-start;
+            flex-direction: column;
+
+            gap: 15px;
+        }
+
+        .assistant-heading h1 {
+            font-size: 31px;
+        }
+
+        .assistant-heading p {
+            font-size: 12px;
+        }
+
+        .assistant-status {
+            width: fit-content;
+        }
+
+        .chat-window {
+            height: 390px;
+            padding: 17px;
+        }
+
+        .message-wrapper,
+        .message-row.user .message-wrapper {
+            max-width: 88%;
+        }
+
+        .message {
+            font-size: 12px;
+            padding: 12px 13px;
+        }
+
+        .assistant-panel {
+            grid-template-columns: 1fr;
+        }
+
+        .assistant-panel .panel-card:last-child {
+            grid-column: auto;
+        }
+
+        .input-row {
+            align-items: stretch;
+        }
+
+        .send-button {
+            min-width: 65px;
+        }
+
+    }
+
+
+    /* =========================================================
+       SMALL MOBILE
+    ========================================================= */
+
+    @media (max-width: 480px) {
+
+        .chat-header {
+            padding: 14px;
+        }
+
+        .bot-avatar {
+            width: 40px;
+            height: 40px;
+        }
+
+        .bot-name {
+            font-size: 16px;
+        }
+
+        .clear-button {
+            padding: 7px 9px;
+        }
+
+        .input-section {
+            padding: 12px;
+        }
+
+        .input-hint {
+            display: none;
+        }
+
+    }
+
+
+/* Assistant refinement */
+.assistant-page { max-width:1400px; }
+.assistant-heading h1 { font-size:clamp(29px,3vw,38px); }
+.chat-container,.chat-panel,.assistant-card { border-radius:18px !important; box-shadow:var(--shadow) !important; border:1px solid #e6ede5 !important; }
+
+</style>
+
+
+<div class="assistant-page">
+
+    <!-- =====================================================
+         PAGE HEADER
+    ===================================================== -->
+
+    <div class="assistant-header">
+
+        <div class="assistant-heading">
+
+            <div class="eyebrow">
+                Intelligent Farming Support
+            </div>
+
+            <h1>
+                Farming Assistant
+            </h1>
+
+            <p>
+                Get guidance on crop selection, yield prediction,
+                farming schedules, technical practices and contract
+                opportunities through one integrated assistant.
+            </p>
+
+        </div>
+
+
+        <div class="assistant-status">
+
+            <span class="online-dot"></span>
+
+            Assistant online
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         MAIN LAYOUT
+    ===================================================== -->
+
+    <div class="assistant-layout">
+
+
+        <!-- =================================================
+             CHAT
+        ================================================= -->
+
+        <div class="chat-card">
+
+
+            <!-- CHAT HEADER -->
+
+            <div class="chat-header">
+
+                <div class="chat-identity">
+
+                    <div class="bot-avatar">
+                        🌱
+                    </div>
+
+                    <div>
+
+                        <div class="bot-name">
+                            Assured Farming Assistant
+                        </div>
+
+                        <div class="bot-subtitle">
+                            ML-powered agricultural guidance
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    class="clear-button"
+                    onclick="clearChat()"
+                    type="button"
+                >
+                    Clear chat
+                </button>
+
+            </div>
+
+
+            <!-- CHAT WINDOW -->
+
+            <div
+                class="chat-window"
+                id="chatWindow"
+            >
+
+                <div class="message-row">
+
+                    <div class="message-wrapper">
+
+                        <div class="message bot">
+
+Hello {{ farmer_name }}! 🌱
+
+I’m your Assured Farming Assistant. I can help you with crop selection, yield prediction, farming schedules, technical guidelines and contract farming.
+
+Try asking me something like:
+“How does yield prediction work?”
+or
+“What are the technical requirements for rice?”
+
+                        </div>
+
+                        <div class="message-label">
+                            Farming Assistant · Ready
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- INPUT -->
+
+            <div class="input-section">
+
+                <div class="input-row">
+
+                    <div class="input-wrapper">
+
+                        <input
+                            type="text"
+                            id="userInput"
+                            class="chat-input"
+                            maxlength="300"
+                            placeholder="Ask about crops, yield, farming or contracts..."
+                            autocomplete="off"
+                        >
+
+                        <span
+                            class="char-count"
+                            id="charCount"
+                        >
+                            0/300
+                        </span>
+
+                    </div>
+
+
+                    <button
+                        class="send-button"
+                        id="sendButton"
+                        onclick="sendMessage()"
+                        type="button"
+                    >
+                        Send
+                    </button>
+
+                </div>
+
+
+                <div class="input-hint">
+                    Press Enter to send · Ask specific crop or farming questions for better guidance.
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             INFORMATION PANEL
+        ================================================= -->
+
+        <div class="assistant-panel">
+
+
+            <!-- CAPABILITIES -->
+
+            <div class="panel-card">
+
+                <h3>
+                    Assistant capabilities
+                </h3>
+
+                <p class="panel-description">
+                    Designed around the modules of this farming platform.
+                </p>
+
+
+                <div class="capability">
+
+                    <div class="capability-icon">
+                        🌱
+                    </div>
+
+                    <div class="capability-text">
+
+                        <strong>
+                            Crop Selection
+                        </strong>
+
+                        Soil and environmental guidance.
+
+                    </div>
+
+                </div>
+
+
+                <div class="capability">
+
+                    <div class="capability-icon">
+                        📈
+                    </div>
+
+                    <div class="capability-text">
+
+                        <strong>
+                            Yield Prediction
+                        </strong>
+
+                        Understand ML-based yield estimates.
+
+                    </div>
+
+                </div>
+
+
+                <div class="capability">
+
+                    <div class="capability-icon">
+                        📅
+                    </div>
+
+                    <div class="capability-text">
+
+                        <strong>
+                            Farming Schedule
+                        </strong>
+
+                        Stage-wise crop management.
+
+                    </div>
+
+                </div>
+
+
+                <div class="capability">
+
+                    <div class="capability-icon">
+                        🤝
+                    </div>
+
+                    <div class="capability-text">
+
+                        <strong>
+                            Contract Farming
+                        </strong>
+
+                        Search and application guidance.
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUICK QUESTIONS -->
+
+            <div class="panel-card">
+
+                <h3>
+                    Suggested questions
+                </h3>
+
+                <p class="panel-description">
+                    Start with one of these common questions.
+                </p>
+
+
+                <div class="quick-list">
+
+                    <button
+                        class="quick-question"
+                        onclick="askQuestion('How does crop recommendation work?')"
+                        type="button"
+                    >
+                        🌱 How does crop recommendation work?
+                    </button>
+
+
+                    <button
+                        class="quick-question"
+                        onclick="askQuestion('How can I predict my yield?')"
+                        type="button"
+                    >
+                        📈 How can I predict my yield?
+                    </button>
+
+
+                    <button
+                        class="quick-question"
+                        onclick="askQuestion('What factors affect crop yield?')"
+                        type="button"
+                    >
+                        🌾 What factors affect crop yield?
+                    </button>
+
+
+                    <button
+                        class="quick-question"
+                        onclick="askQuestion('Tell me about farming schedules')"
+                        type="button"
+                    >
+                        📅 Tell me about farming schedules
+                    </button>
+
+
+                    <button
+                        class="quick-question"
+                        onclick="askQuestion('How can I find contracts?')"
+                        type="button"
+                    >
+                        🤝 How can I find contracts?
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- TOPICS -->
+
+            <div class="panel-card">
+
+                <h3>
+                    Topics covered
+                </h3>
+
+                <p class="panel-description">
+                    Ask questions using natural language.
+                </p>
+
+
+                <div class="topic-grid">
+
+                    <span class="topic-chip">
+                        Crop Selection
+                    </span>
+
+                    <span class="topic-chip">
+                        Yield
+                    </span>
+
+                    <span class="topic-chip">
+                        Irrigation
+                    </span>
+
+                    <span class="topic-chip">
+                        Fertilizer
+                    </span>
+
+                    <span class="topic-chip">
+                        Soil
+                    </span>
+
+                    <span class="topic-chip">
+                        Pests
+                    </span>
+
+                    <span class="topic-chip">
+                        Harvesting
+                    </span>
+
+                    <span class="topic-chip">
+                        Contracts
+                    </span>
+
+                    <span class="topic-chip">
+                        ML
+                    </span>
+
+                    <span class="topic-chip">
+                        Farm Planning
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    /* =========================================================
+       ELEMENTS
+    ========================================================= */
+
+    const chatWindow =
+        document.getElementById("chatWindow");
+
+    const userInput =
+        document.getElementById("userInput");
+
+    const sendButton =
+        document.getElementById("sendButton");
+
+    const charCount =
+        document.getElementById("charCount");
+
+
+    /* =========================================================
+       CHARACTER COUNTER
+    ========================================================= */
+
+    userInput.addEventListener(
+        "input",
+        function() {
+
+            charCount.textContent =
+                userInput.value.length + "/300";
+
+        }
+    );
+
+
+    /* =========================================================
+       ADD MESSAGE
+    ========================================================= */
+
+    function addMessage(text, type) {
+
+        const row =
+            document.createElement("div");
+
+        row.className =
+            "message-row " + type;
+
+
+        const wrapper =
+            document.createElement("div");
+
+        wrapper.className =
+            "message-wrapper";
+
+
+        const message =
+            document.createElement("div");
+
+        message.className =
+            "message " + type;
+
+        message.textContent =
+            text;
+
+
+        const label =
+            document.createElement("div");
+
+        label.className =
+            "message-label";
+
+        label.textContent =
+            type === "user"
+                ? "You"
+                : "Farming Assistant";
+
+
+        wrapper.appendChild(message);
+
+        wrapper.appendChild(label);
+
+        row.appendChild(wrapper);
+
+        chatWindow.appendChild(row);
+
+
+        chatWindow.scrollTop =
+            chatWindow.scrollHeight;
+
+    }
+
+
+    /* =========================================================
+       TYPING INDICATOR
+    ========================================================= */
+
+    function showTyping() {
+
+        const row =
+            document.createElement("div");
+
+        row.className =
+            "message-row";
+
+        row.id =
+            "typingMessage";
+
+
+        row.innerHTML = `
+
+            <div class="message-wrapper">
+
+                <div class="message bot">
+
+                    <div class="typing">
+
+                        <span></span>
+                        <span></span>
+                        <span></span>
+
+                    </div>
+
+                </div>
+
+                <div class="message-label">
+                    Farming Assistant · Thinking
+                </div>
+
+            </div>
+
+        `;
+
+
+        chatWindow.appendChild(row);
+
+        chatWindow.scrollTop =
+            chatWindow.scrollHeight;
+
+    }
+
+
+    /* =========================================================
+       REMOVE TYPING
+    ========================================================= */
+
+    function removeTyping() {
+
+        const typing =
+            document.getElementById(
+                "typingMessage"
+            );
+
+
+        if (typing) {
+
+            typing.remove();
+
+        }
+
+    }
+
+
+    /* =========================================================
+       SEND MESSAGE
+    ========================================================= */
+
+    async function sendMessage() {
+
+        const message =
+            userInput.value.trim();
+
+
+        if (!message) {
+
+            return;
+
+        }
+
+
+        addMessage(
+            message,
+            "user"
+        );
+
+
+        userInput.value = "";
+
+        charCount.textContent =
+            "0/300";
+
+
+        sendButton.disabled =
+            true;
+
+
+        showTyping();
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "{{ url_for('chatbot_message') }}",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            message: message
+                        })
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Server response was not successful."
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            removeTyping();
+
+
+            addMessage(
+
+                data.reply ||
+
+                "I could not process that question. Please try asking about crops, yield prediction, farming schedules, technical guidelines or contracts.",
+
+                "bot"
+
+            );
+
+
+        } catch (error) {
+
+            removeTyping();
+
+
+            addMessage(
+
+                "I'm having trouble connecting to the farming assistant right now. Please try again.",
+
+                "bot"
+
+            );
+
+
+            console.error(error);
+
+        }
+
+
+        sendButton.disabled =
+            false;
+
+
+        userInput.focus();
+
+    }
+
+
+    /* =========================================================
+       QUICK QUESTION
+    ========================================================= */
+
+    function askQuestion(question) {
+
+        userInput.value =
+            question;
+
+
+        charCount.textContent =
+            question.length + "/300";
+
+
+        sendMessage();
+
+    }
+
+
+    /* =========================================================
+       CLEAR CHAT
+    ========================================================= */
+
+    function clearChat() {
+
+        chatWindow.innerHTML = `
+
+            <div class="message-row">
+
+                <div class="message-wrapper">
+
+                    <div class="message bot">
+
+Chat cleared. 🌱
+
+I'm ready to help with crop selection, yield prediction, farming schedules, technical guidelines and contract farming.
+
+What would you like to know?
+
+                    </div>
+
+                    <div class="message-label">
+                        Farming Assistant · Ready
+                    </div>
+
+                </div>
+
+            </div>
+
+        `;
+
+    }
+
+
+    /* =========================================================
+       ENTER KEY
+    ========================================================= */
+
+    userInput.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key === "Enter" &&
+                !event.shiftKey
+            ) {
+
+                event.preventDefault();
+
+                sendMessage();
+
+            }
+
+        }
+    );
+
+</script>
+
+{% endblock %}

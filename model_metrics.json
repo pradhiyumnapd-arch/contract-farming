@@ -1,0 +1,15 @@
+{
+  "crop": {
+    "accuracy": 98.96,
+    "f1_macro": 98.96,
+    "train_samples": 1920,
+    "test_samples": 480
+  },
+  "yield": {
+    "r2": 0.9802,
+    "mae": 9.399,
+    "rmse": 125.882,
+    "train_samples": 15751,
+    "test_samples": 3938
+  }
+}

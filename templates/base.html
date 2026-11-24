@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>
+    {% block title %}Assured Contract Farming{% endblock %}
+  </title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Work+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  >
+
+  <style>
+
+    /* =========================================================
+       GLOBAL
+    ========================================================= */
+
+    :root {
+      --paper: #f5f7f2;
+      --ink: #172b22;
+      --forest: #173f32;
+      --forest-2: #225642;
+      --gold: #d5a64b;
+      --clay: #a65d3d;
+      --line: #e2e9df;
+      --muted: #718078;
+      --surface: #ffffff;
+      --shadow: 0 12px 34px rgba(25, 55, 42, .065);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+
+      display: flex;
+
+      background: var(--paper);
+      color: var(--ink);
+
+      font-family: "Work Sans", sans-serif;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: "Fraunces", serif;
+      font-weight: 600;
+      margin: 0;
+    }
+
+
+    /* =========================================================
+       SIDEBAR
+    ========================================================= */
+
+    .rail {
+      width: 230px;
+      min-width: 230px;
+
+      min-height: 100vh;
+
+      background: var(--forest);
+      color: #EDE7D6;
+
+      padding: 26px 0 20px;
+
+      display: flex;
+      flex-direction: column;
+
+      flex-shrink: 0;
+
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+
+    /* WORDMARK */
+
+    .rail .wordmark {
+      font-family: "Fraunces", serif;
+      font-style: italic;
+      font-weight: 500;
+
+      font-size: 19px;
+      line-height: 1.25;
+
+      color: #EDE7D6;
+
+      padding: 0 24px 18px;
+
+      border-bottom:
+        1px solid rgba(237, 231, 214, 0.18);
+
+      margin-bottom: 14px;
+    }
+
+
+    /* NAVIGATION */
+
+    .rail nav {
+      display: flex;
+      flex-direction: column;
+
+      gap: 2px;
+
+      overflow-y: auto;
+      overflow-x: hidden;
+
+      flex: 1;
+    }
+
+    .rail a {
+      color: #CFD9C9;
+
+      text-decoration: none;
+
+      font-size: 14px;
+      line-height: 1.35;
+
+      padding: 10px 24px;
+
+      border-left: 3px solid transparent;
+
+      transition:
+        color 0.18s ease,
+        background 0.18s ease,
+        border-color 0.18s ease;
+    }
+
+    .rail a:hover {
+      color: #FFFFFF;
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .rail a.active {
+      color: #FFFFFF;
+
+      border-left-color: var(--gold);
+
+      background:
+        rgba(255, 255, 255, 0.055);
+    }
+
+
+    /* LOGOUT */
+
+    .rail .logout {
+      margin-top: auto;
+
+      padding:
+        14px 24px 0;
+
+      font-size: 13px;
+
+      color: #B9C4B1;
+
+      text-decoration: none;
+
+      border-top:
+        1px solid rgba(237, 231, 214, 0.18);
+    }
+
+    .rail .logout:hover {
+      color: var(--gold);
+
+      background: transparent;
+    }
+
+
+    /* =========================================================
+       MAIN CONTENT AREA
+    ========================================================= */
+
+    .main {
+      flex: 1;
+
+      min-width: 0;
+
+      width: 100%;
+
+      padding: 40px 48px;
+
+      max-width: none;
+
+      overflow-x: hidden;
+    }
+
+
+    /* =========================================================
+       FLASH MESSAGE
+    ========================================================= */
+
+    .flash {
+      width: 100%;
+
+      background: #fbeee2;
+
+      color: #8a4a2a;
+
+      border-left:
+        3px solid var(--clay);
+
+      padding: 10px 14px;
+
+      font-size: 13px;
+
+      margin-bottom: 20px;
+
+      border-radius: 4px;
+    }
+
+
+    /* =========================================================
+       LARGE DESKTOP
+    ========================================================= */
+
+    @media (min-width: 1400px) {
+
+      .main {
+        padding:
+          44px 60px;
+      }
+
+    }
+
+
+    /* =========================================================
+       LAPTOP / MEDIUM SCREEN
+    ========================================================= */
+
+    @media (max-width: 1100px) {
+
+      .main {
+        padding:
+          34px 36px;
+      }
+
+      .rail {
+        width: 220px;
+        min-width: 220px;
+      }
+
+      .rail a {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .rail .wordmark {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+    }
+
+
+    /* =========================================================
+       SMALL TABLET
+    ========================================================= */
+
+    @media (max-width: 800px) {
+
+      body {
+        display: block;
+      }
+
+      .rail {
+        width: 100%;
+        min-width: 0;
+
+        min-height: auto;
+        height: auto;
+
+        position: relative;
+
+        padding: 16px 0;
+      }
+
+      .rail .wordmark {
+        margin-bottom: 10px;
+      }
+
+      .rail nav {
+        overflow: visible;
+        flex: none;
+      }
+
+      .rail a {
+        padding:
+          9px 24px;
+      }
+
+      .rail .logout {
+        margin-top: 8px;
+      }
+
+      .main {
+        width: 100%;
+
+        padding:
+          28px 24px;
+      }
+
+    }
+
+
+    /* =========================================================
+       MOBILE
+    ========================================================= */
+
+    @media (max-width: 600px) {
+
+      .rail .wordmark {
+        font-size: 18px;
+
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+
+      .rail a {
+        font-size: 13px;
+
+        padding:
+          9px 18px;
+      }
+
+      .main {
+        padding:
+          24px 18px;
+      }
+
+      .flash {
+        font-size: 12px;
+      }
+
+    }
+
+
+    /* PREMIUM PRODUCT DESIGN SYSTEM */
+    body { background: #f4f7f3; color: #1c3026; font-family: "Work Sans", sans-serif; }
+    .rail { width: 252px; min-width: 252px; padding: 27px 15px 20px; background: linear-gradient(180deg,#123b2d 0%,#1b4937 55%,#173d30 100%); box-shadow: 8px 0 30px rgba(20,54,39,.08); }
+    .rail .wordmark { margin: 0 7px 23px; padding: 8px 13px 22px; border-bottom: 1px solid rgba(255,255,255,.13); font-family: "Work Sans",sans-serif; font-style: normal; font-size: 18px; line-height: 1.25; font-weight: 700; letter-spacing: -.45px; }
+    .rail .wordmark:before { content: "✳"; display:inline-flex; align-items:center; justify-content:center; width:34px;height:34px; margin-right:10px; border-radius:11px; color:#173f32;background:#e3c477; font-size:20px; vertical-align:middle; }
+    .rail nav { gap: 5px; padding: 0 3px; }
+    .rail nav a { display:flex; align-items:center; min-height:43px; padding:11px 14px; border:0; border-radius:10px; color:#c7d8cd; font-size:13px; font-weight:550; letter-spacing:.05px; transition:background .18s ease,transform .18s ease,color .18s ease; }
+    .rail nav a:hover { color:#fff; background:rgba(255,255,255,.09); transform:translateX(2px); }
+    .rail nav a.active { color:#fff; background:rgba(255,255,255,.14); box-shadow:inset 3px 0 #e1bd69; }
+    .rail nav a.logout { margin-top:auto; border-top:1px solid rgba(255,255,255,.13); border-radius:0; padding-top:18px; color:#e0c5b5; }
+    .main { padding: 42px clamp(24px,4vw,62px); max-width:none; }
+    .main > * { max-width: 1480px; }
+    h1,h2,h3 { color:#1b3528; letter-spacing:-.45px; }
+    h1 { font-size:clamp(27px,3vw,36px); line-height:1.15; }
+    h2 { font-size:22px; }
+    p { line-height:1.65; }
+    .flash { background:#fff7e8; color:#85551d; border:1px solid #f2dfb9; border-left:4px solid #d5a64b; border-radius:11px; padding:13px 16px; }
+    button, input, select, textarea { font:inherit; }
+    input,select,textarea { border:1px solid #dce5dc !important; border-radius:10px !important; background:#fbfcfa !important; color:#20372a !important; transition:border .18s,box-shadow .18s; }
+    input:focus,select:focus,textarea:focus { outline:none !important; border-color:#5b8b6d !important; box-shadow:0 0 0 3px rgba(72,126,91,.12) !important; }
+    button, .search-button, .yield-button, .submit-btn { border-radius:10px !important; background:#1c523d !important; box-shadow:0 5px 12px rgba(28,82,61,.12); transition:transform .18s,background .18s,box-shadow .18s; }
+    button:hover, .search-button:hover, .yield-button:hover, .submit-btn:hover { background:#123e2d !important; transform:translateY(-1px); box-shadow:0 8px 18px rgba(28,82,61,.17); }
+    a { transition:color .18s,background .18s; }
+    .panel,.card,.search-panel,.yield-card,.schedule-card,.guideline-card,.summary-card,.status-card,.contract-card,.result-card { border:1px solid #e7ede6 !important; border-radius:17px !important; box-shadow:var(--shadow) !important; }
+    table { width:100%; border-collapse:collapse; }
+    th { background:#f3f7f2; color:#52665a; font-size:12px; text-transform:uppercase; letter-spacing:.55px; }
+    td,th { padding:13px 15px; border-bottom:1px solid #edf1ec; }
+    @media(max-width:850px) {
+      body { display:block; }
+      .rail { position:relative; width:100%; min-width:0; height:auto; min-height:0; padding:12px 14px; }
+      .rail .wordmark { padding:5px 7px 13px; margin:0 0 10px; }
+      .rail nav { flex-direction:row; flex-wrap:wrap; gap:5px; }
+      .rail nav a { min-height:36px; padding:8px 10px; font-size:12px; }
+      .rail nav a.logout { margin-top:0; border:0; padding:8px 10px; }
+      .main { padding:25px 18px; }
+    }
+    @media(max-width:560px) { .rail nav a { flex:1 1 42%; } .main { padding:20px 14px; } }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+  <!-- =======================================================
+       SIDEBAR
+  ======================================================== -->
+
+  <div class="rail">
+
+    <div class="wordmark">
+      Assured<br>
+      Contract Farming
+    </div>
+
+
+    <nav>
+
+      <a
+        href="{{ url_for('candidate_home') }}"
+        class="{{ 'active' if active=='home' }}"
+      >
+        Home
+      </a>
+
+
+      <a
+        href="{{ url_for('dashboard') }}"
+        class="{{ 'active' if active=='dashboard' }}"
+      >
+        Dashboard
+      </a>
+
+
+      <a
+        href="{{ url_for('search_apply') }}"
+        class="{{ 'active' if active=='search_apply' }}"
+      >
+        Search &amp; Apply
+      </a>
+
+
+      <a
+        href="{{ url_for('crop_selection') }}"
+        class="{{ 'active' if active=='crop_selection' }}"
+      >
+        Crop Selection
+      </a>
+
+
+      <a
+        href="{{ url_for('farming_schedule') }}"
+        class="{{ 'active' if active=='farming_schedule' }}"
+      >
+        Farming Schedule
+      </a>
+
+
+      <a
+        href="{{ url_for('technical_guidelines') }}"
+        class="{{ 'active' if active=='technical_guidelines' }}"
+      >
+        Technical Guidelines
+      </a>
+
+
+      <a
+        href="{{ url_for('yield_prediction') }}"
+        class="{% if active == 'yield_prediction' %}active{% endif %}"
+      >
+        Yield Prediction
+      </a>
+
+
+      <a
+        href="{{ url_for('chatbot_page') }}"
+        class="{{ 'active' if active=='chatbot' }}"
+      >
+        Chatbot
+      </a>
+
+
+      <a
+        href="{{ url_for('logout') }}"
+        class="logout"
+      >
+        Logout
+      </a>
+
+    </nav>
+
+  </div>
+
+
+  <!-- =======================================================
+       MAIN CONTENT
+  ======================================================== -->
+
+  <div class="main">
+
+
+    {% with messages = get_flashed_messages() %}
+
+      {% if messages %}
+
+        {% for m in messages %}
+
+          <div class="flash">
+            {{ m }}
+          </div>
+
+        {% endfor %}
+
+      {% endif %}
+
+    {% endwith %}
+
+
+    {% block content %}{% endblock %}
+
+
+  </div>
+
+
+</body>
+
+</html>

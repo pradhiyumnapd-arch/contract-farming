@@ -1,0 +1,400 @@
+{% extends "base.html" %}
+{% block title %}Technical Guidelines{% endblock %}
+{% block content %}
+<style>
+    .technical-page {
+        max-width: 1200px;
+        margin: auto;
+    }
+    /* HEADER */
+    .technical-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 25px;
+    }
+    .technical-header h1 {
+        margin: 0 0 7px;
+        font-size: 32px;
+    }
+    .technical-header p {
+        margin: 0;
+        color: #6b7280;
+    }
+    /* CROP SELECTOR */
+    .crop-selector {
+        background: white;
+        padding: 18px 20px;
+        border-radius: 16px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+        min-width: 230px;
+    }
+    .crop-selector label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 7px;
+        color: #4b5563;
+    }
+    .crop-selector select {
+        width: 100%;
+        padding: 11px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 9px;
+        background: white;
+        font-size: 14px;
+    }
+    /* OVERVIEW */
+    .crop-overview {
+        background: linear-gradient(135deg, #064e3b, #047857);
+        color: white;
+        border-radius: 20px;
+        padding: 28px;
+        margin-bottom: 22px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+    .crop-icon {
+        width: 65px;
+        height: 65px;
+        background: rgba(255,255,255,0.15);
+        border-radius: 17px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+    }
+    .crop-overview h2 {
+        margin: 0 0 7px;
+        font-size: 25px;
+    }
+    .crop-overview p {
+        margin: 0;
+        opacity: 0.9;
+    }
+    /* QUICK STATUS */
+    .status-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+    .status-card {
+        background: white;
+        border-radius: 15px;
+        padding: 18px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+    }
+    .status-card .status-icon {
+        font-size: 23px;
+        margin-bottom: 10px;
+    }
+    .status-card h3 {
+        margin: 0 0 6px;
+        font-size: 15px;
+    }
+    .status-card p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+    /* MAIN GRID */
+    .main-grid {
+        display: grid;
+        grid-template-columns: 1.4fr 0.8fr;
+        gap: 20px;
+    }
+    .panel {
+        background: white;
+        border-radius: 18px;
+        padding: 24px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+    }
+    .panel h2 {
+        margin: 0 0 6px;
+        font-size: 20px;
+    }
+    .panel-subtitle {
+        color: #6b7280;
+        margin: 0 0 20px;
+        font-size: 14px;
+    }
+    /* ACTION PLAN */
+    .action {
+        display: flex;
+        align-items: flex-start;
+        gap: 13px;
+        padding: 14px;
+        border-radius: 11px;
+        background: #f9fafb;
+        margin-bottom: 10px;
+    }
+    .action-number {
+        min-width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: #047857;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 600;
+    }
+    .action span {
+        color: #374151;
+        line-height: 1.5;
+        font-size: 14px;
+    }
+    /* WARNING */
+    .warning {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 13px;
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+    .warning span {
+        font-size: 14px;
+        color: #4b5563;
+        line-height: 1.5;
+    }
+    /* RECORDS */
+    .records {
+        margin-top: 20px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    .record {
+        background: #f9fafb;
+        padding: 13px;
+        border-radius: 10px;
+        font-size: 13px;
+        color: #4b5563;
+    }
+    /* FOOTER NOTE */
+    .technical-note {
+        margin-top: 22px;
+        padding: 18px;
+        background: #f3f4f6;
+        border-radius: 14px;
+        color: #6b7280;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+    @media (max-width: 900px) {
+        .technical-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .status-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .main-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    @media (max-width: 600px) {
+        .status-grid {
+            grid-template-columns: 1fr;
+        }
+        .records {
+            grid-template-columns: 1fr;
+        }
+        .crop-overview {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+
+/* Field guidance refinement */
+.technical-page { max-width:1280px; }
+.technical-header { padding:4px 0 22px; }
+.panel,.crop-overview,.status-card { box-shadow:var(--shadow); }
+.crop-overview { background:linear-gradient(120deg,#174b36,#2b7050); }
+.action { background:#f5f8f4; border:1px solid #e8eee7; border-radius:12px; }
+.warning { border-radius:12px; }
+
+</style>
+<div class="technical-page">
+    <!-- HEADER -->
+    <div class="technical-header">
+        <div>
+            <h1>Technical Guidelines</h1>
+            <p>
+                Practical field guidance and crop-management actions.
+            </p>
+        </div>
+        <div class="crop-selector">
+            <form method="POST">
+                <label for="crop">
+                    Select Crop
+                </label>
+                <select
+                    id="crop"
+                    name="crop"
+                    onchange="this.form.submit()"
+                >
+                    {% for crop_name in crops %}
+                        <option
+                            value="{{ crop_name }}"
+                            {% if crop_name == crop %}selected{% endif %}
+                        >
+                            {{ crop_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+    </div>
+    <!-- CROP OVERVIEW -->
+    <div class="crop-overview">
+        <div class="crop-icon">
+            {{ guideline.icon }}
+        </div>
+        <div>
+            <h2>{{ crop }} Management</h2>
+            <p>
+                Main growth stages:
+                <strong>{{ guideline.stage }}</strong>
+            </p>
+        </div>
+    </div>
+    <!-- QUICK STATUS -->
+    <div class="status-grid">
+        <div class="status-card">
+            <div class="status-icon">💧</div>
+            <h3>Water</h3>
+            <p>
+                {{ guideline.water }}
+            </p>
+        </div>
+        <div class="status-card">
+            <div class="status-icon">🌱</div>
+            <h3>Soil</h3>
+            <p>
+                {{ guideline.soil }}
+            </p>
+        </div>
+        <div class="status-card">
+            <div class="status-icon">🧪</div>
+            <h3>Nutrients</h3>
+            <p>
+                {{ guideline.nutrients }}
+            </p>
+        </div>
+        <div class="status-card">
+            <div class="status-icon">🐛</div>
+            <h3>Pest Monitoring</h3>
+            <p>
+                {{ guideline.pests }}
+            </p>
+        </div>
+    </div>
+    <!-- MAIN CONTENT -->
+    <div class="main-grid">
+        <!-- ACTION PLAN -->
+        <div class="panel">
+            <h2>📋 Field Action Plan</h2>
+            <p class="panel-subtitle">
+                Practical checks to perform during crop management.
+            </p>
+            {% for action in guideline.actions %}
+                <div class="action">
+                    <div class="action-number">
+                        {{ loop.index }}
+                    </div>
+                    <span>
+                        {{ action }}
+                    </span>
+                </div>
+            {% endfor %}
+            <div class="records">
+                <div class="record">
+                    📅 Record sowing date
+                </div>
+                <div class="record">
+                    💧 Record irrigation
+                </div>
+                <div class="record">
+                    🧪 Record fertilizer application
+                </div>
+                <div class="record">
+                    🐛 Record pest observations
+                </div>
+            </div>
+        </div>
+        <!-- WARNING PANEL -->
+        <div class="panel">
+            <h2>⚠️ Watch For</h2>
+            <p class="panel-subtitle">
+                Conditions that require closer inspection.
+            </p>
+            {% for warning in guideline.warnings %}
+                <div class="warning">
+                    <span>⚠️</span>
+                    <span>
+                        {{ warning }}
+                    </span>
+                </div>
+            {% endfor %}
+            <h2 style="margin-top:25px;">
+                🌦️ Weather
+            </h2>
+            <p class="panel-subtitle">
+                {{ guideline.weather }}
+            </p>
+        </div>
+    </div>
+    <!-- FARM RECORDS -->
+    <div class="panel" style="margin-top:20px;">
+        <h2>📊 Recommended Farm Records</h2>
+        <p class="panel-subtitle">
+            Keeping these records can help monitor crop performance
+            throughout the farming cycle.
+        </p>
+        <div class="records">
+            <div class="record">
+                🌱 Crop &amp; variety
+            </div>
+            <div class="record">
+                📅 Sowing date
+            </div>
+            <div class="record">
+                💧 Irrigation history
+            </div>
+            <div class="record">
+                🧪 Fertilizer history
+            </div>
+            <div class="record">
+                🐛 Pest observations
+            </div>
+            <div class="record">
+                🌦️ Weather observations
+            </div>
+            <div class="record">
+                🌾 Harvest date
+            </div>
+            <div class="record">
+                📦 Yield information
+            </div>
+        </div>
+    </div>
+    <!-- NOTE -->
+    <div class="technical-note">
+        <strong>Important:</strong>
+        These guidelines provide general crop-management information.
+        Actual irrigation, fertilizer, pest and disease-management
+        decisions should consider local soil, weather, crop conditions
+        and applicable agricultural recommendations. For serious crop
+        health problems, consult a qualified agricultural professional.
+    </div>
+</div>
+{% endblock %}

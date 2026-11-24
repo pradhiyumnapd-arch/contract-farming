@@ -1,0 +1,546 @@
+{% extends "base.html" %}
+
+{% block title %}
+Search & Apply
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .page-header {
+        margin-bottom: 28px;
+    }
+
+    .page-header h1 {
+        margin: 0 0 8px;
+        font-family: "Fraunces", serif;
+        font-size: 34px;
+        color: #202B22;
+    }
+
+    .page-header p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .search-panel {
+        background: #ffffff;
+        border: 1px solid #D8DECB;
+        border-radius: 16px;
+        padding: 25px;
+        margin-bottom: 28px;
+    }
+
+    .search-panel h2 {
+        margin: 0 0 6px;
+        font-size: 20px;
+        color: #202B22;
+    }
+
+    .search-subtitle {
+        color: #777d76;
+        font-size: 13px;
+        margin-bottom: 22px;
+    }
+
+    .search-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 18px;
+        align-items: end;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group label {
+        font-size: 13px;
+        font-weight: 700;
+        color: #202B22;
+        margin-bottom: 7px;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px 13px;
+        border: 1px solid #D8DECB;
+        border-radius: 9px;
+        background: #F8FAF7;
+        color: #202B22;
+        font-family: "Work Sans", sans-serif;
+        font-size: 13px;
+        outline: none;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        border-color: #24463A;
+        background: #ffffff;
+    }
+
+    .search-button {
+        width: 100%;
+        padding: 12px 18px;
+        border: none;
+        border-radius: 9px;
+        background: #24463A;
+        color: white;
+        font-family: "Work Sans", sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .search-button:hover {
+        background: #1c382e;
+    }
+
+    .results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .results-header h2 {
+        margin: 0;
+        font-size: 21px;
+        color: #202B22;
+    }
+
+    .results-count {
+        color: #777d76;
+        font-size: 13px;
+    }
+
+    .contract-list {
+        display: grid;
+        gap: 16px;
+    }
+
+    .contract-card {
+        background: #ffffff;
+        border: 1px solid #D8DECB;
+        border-radius: 14px;
+        padding: 21px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .contract-info {
+        flex: 1;
+    }
+
+    .contract-info h3 {
+        margin: 0 0 8px;
+        font-size: 18px;
+        color: #202B22;
+    }
+
+    .contract-details {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        color: #6b7280;
+        font-size: 13px;
+    }
+
+    .contract-detail {
+        background: #F1F3EA;
+        padding: 6px 9px;
+        border-radius: 7px;
+    }
+
+    .contract-price {
+        margin-top: 12px;
+        font-size: 15px;
+        font-weight: 700;
+        color: #24463A;
+    }
+
+    .contract-action {
+        flex-shrink: 0;
+    }
+
+    .apply-button {
+        padding: 11px 18px;
+        border: none;
+        border-radius: 9px;
+        background: #C98A2B;
+        color: white;
+        font-family: "Work Sans", sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .apply-button:hover {
+        background: #ad731e;
+    }
+
+    .empty-state {
+        background: #ffffff;
+        border: 1px solid #D8DECB;
+        border-radius: 14px;
+        padding: 40px 25px;
+        text-align: center;
+        color: #6b7280;
+    }
+
+    .empty-state strong {
+        display: block;
+        color: #202B22;
+        font-size: 16px;
+        margin-bottom: 7px;
+    }
+
+    .flash-message {
+        background: #edf6ee;
+        border: 1px solid #c9dfcc;
+        color: #24463A;
+        padding: 12px 15px;
+        border-radius: 9px;
+        margin-bottom: 20px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    @media (max-width: 800px) {
+
+        .search-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .contract-card {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .contract-action {
+            width: 100%;
+        }
+
+        .apply-button {
+            width: 100%;
+        }
+
+        .results-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
+    }
+
+
+/* Contract marketplace refinement */
+.page-header { padding:4px 0 22px; }
+.search-panel { background:linear-gradient(145deg,#fff,#fbfdf9); padding:27px; }
+.search-grid { gap:14px; }
+.results-header { padding-top:8px; }
+.contract-card { background:#fff; padding:22px; transition:transform .18s,box-shadow .18s; }
+.contract-card:hover { transform:translateY(-3px); box-shadow:0 16px 36px rgba(25,55,42,.10) !important; }
+@media(max-width:850px){.search-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.search-grid{grid-template-columns:1fr}}
+
+</style>
+
+
+<!-- ============================================================
+     PAGE HEADER
+     ============================================================ -->
+
+<div class="page-header">
+
+    <h1>
+        Search & Apply
+    </h1>
+
+    <p>
+        Find suitable farming contracts based on crop, location and farm area.
+    </p>
+
+</div>
+
+
+<!-- ============================================================
+     FLASH MESSAGES
+     ============================================================ -->
+
+{% with messages = get_flashed_messages() %}
+
+    {% if messages %}
+
+        {% for message in messages %}
+
+            <div class="flash-message">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+{% endwith %}
+
+
+<!-- ============================================================
+     SEARCH PANEL
+     ============================================================ -->
+
+<div class="search-panel">
+
+    <h2>
+        🔎 Find Farming Contracts
+    </h2>
+
+    <div class="search-subtitle">
+        Select your requirements to find matching contract opportunities.
+    </div>
+
+
+    <form
+        method="POST"
+        action="{{ url_for('search_apply') }}"
+    >
+
+        <div class="search-grid">
+
+
+            <!-- CROP -->
+
+            <div class="form-group">
+
+                <label for="crop">
+                    Crop
+                </label>
+
+                <select
+                    name="crop"
+                    id="crop"
+                >
+
+                    <option value="">
+                        Select Crop
+                    </option>
+
+                    {% for item in crops %}
+
+                        <option
+                            value="{{ item }}"
+                            {% if crop == item %}selected{% endif %}
+                        >
+                            {{ item }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <!-- LOCATION -->
+
+            <div class="form-group">
+
+                <label for="location">
+                    Location / State
+                </label>
+
+                <select
+                    name="location"
+                    id="location"
+                >
+
+                    <option value="">
+                        Select State
+                    </option>
+
+                    {% for loc in locations %}
+
+                        <option
+                            value="{{ loc }}"
+                            {% if location == loc %}selected{% endif %}
+                        >
+                            {{ loc }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <!-- FARM AREA -->
+
+            <div class="form-group">
+
+                <label for="farm_area">
+                    Farm Area (Acres)
+                </label>
+
+                <input
+                    type="number"
+                    name="farm_area"
+                    id="farm_area"
+                    step="0.01"
+                    min="0"
+                    value="{{ farm_area }}"
+                    placeholder="Enter farm area"
+                >
+
+            </div>
+
+
+            <!-- SEARCH BUTTON -->
+
+            <div class="form-group">
+
+                <button
+                    type="submit"
+                    class="search-button"
+                >
+                    Search Contracts
+                </button>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<!-- ============================================================
+     RESULTS
+     ============================================================ -->
+
+<div class="results-header">
+
+    <h2>
+        Contract Opportunities
+    </h2>
+
+    <div class="results-count">
+
+        {% if searched %}
+
+            {{ contracts|length }} matching contract(s)
+
+        {% else %}
+
+            {{ contracts|length }} available contract(s)
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+{% if contracts %}
+
+    <div class="contract-list">
+
+        {% for contract in contracts %}
+
+            <div class="contract-card">
+
+
+                <!-- CONTRACT INFORMATION -->
+
+                <div class="contract-info">
+
+                    <h3>
+                        {{ contract.company }}
+                    </h3>
+
+
+                    <div class="contract-details">
+
+                        <span class="contract-detail">
+                            🌱 {{ contract.crop }}
+                        </span>
+
+                        <span class="contract-detail">
+                            📍 {{ contract.location }}
+                        </span>
+
+                        {% if farm_area %}
+
+                            <span class="contract-detail">
+                                🚜 {{ farm_area }} Acres
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="contract-price">
+
+                        💰
+                        ₹{{ "{:,.0f}".format(contract.price) }}
+
+                    </div>
+
+                </div>
+
+
+                <!-- APPLY BUTTON -->
+
+                <div class="contract-action">
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'apply_for_contract',
+                            contract_id=contract.id
+                        ) }}"
+                    >
+
+                        <button
+                            type="submit"
+                            class="apply-button"
+                        >
+                            Apply for Contract
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+
+{% else %}
+
+    <div class="empty-state">
+
+        <strong>
+            No matching contracts found.
+        </strong>
+
+        Try selecting a different crop or state and search again.
+
+    </div>
+
+{% endif %}
+
+{% endblock %}

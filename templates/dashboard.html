@@ -1,0 +1,1527 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    .dashboard {
+        width: 100%;
+    }
+
+    /* ================= HEADER ================= */
+
+    .dashboard-header {
+        margin-bottom: 28px;
+    }
+
+    .dashboard-header h1 {
+        margin: 0 0 8px;
+        font-size: 32px;
+    }
+
+    .dashboard-header p {
+        margin: 0;
+        color: #6b7280;
+        line-height: 1.6;
+    }
+
+    /* ================= SUMMARY ================= */
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        margin-bottom: 25px;
+    }
+
+    .summary-card {
+        background: white;
+        border-radius: 16px;
+        padding: 21px;
+        border: 1px solid #edf0e9;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+    }
+
+    .summary-card .label {
+        color: #6b7280;
+        font-size: 13px;
+        margin-bottom: 10px;
+    }
+
+    .summary-card h2 {
+        margin: 0;
+        font-size: 24px;
+        color: #24463A;
+    }
+
+    .summary-card p {
+        margin: 7px 0 0;
+        color: #8a8f89;
+        font-size: 13px;
+    }
+
+    /* ================= MAIN GRID ================= */
+
+    .main-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 22px;
+        margin-bottom: 25px;
+    }
+
+    .panel {
+        background: white;
+        border-radius: 18px;
+        padding: 24px;
+        border: 1px solid #edf0e9;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+    }
+
+    .panel h2 {
+        margin: 0 0 6px;
+        font-size: 21px;
+    }
+
+    .panel-subtitle {
+        color: #6b7280;
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+
+    /* ================= RECOMMENDATION ================= */
+
+    .recommendation {
+        background: #f1f8f1;
+        border-left: 5px solid #388e3c;
+        border-radius: 12px;
+        padding: 22px;
+    }
+
+    .recommendation .small {
+        color: #6b7280;
+        font-size: 13px;
+    }
+
+    .recommendation h3 {
+        margin: 7px 0;
+        font-size: 29px;
+        color: #24463A;
+    }
+
+    .recommendation p {
+        margin: 0;
+        color: #4b5563;
+        line-height: 1.6;
+    }
+
+    .ml-badge {
+        display: inline-block;
+        margin-top: 15px;
+        padding: 6px 11px;
+        border-radius: 20px;
+        background: #dcfce7;
+        color: #166534;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    /* ================= FARM PROFILE ================= */
+
+    .profile-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .profile-item {
+        background: #f8faf7;
+        padding: 14px;
+        border-radius: 10px;
+    }
+
+    .profile-item span {
+        display: block;
+        color: #777;
+        font-size: 12px;
+        margin-bottom: 5px;
+    }
+
+    .profile-item strong {
+        font-size: 15px;
+    }
+
+    /* ================= YIELD ================= */
+
+    .yield-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+    }
+
+    .yield-box {
+        background: #f8faf7;
+        border-radius: 12px;
+        padding: 18px;
+    }
+
+    .yield-box span {
+        display: block;
+        color: #6b7280;
+        font-size: 13px;
+        margin-bottom: 7px;
+    }
+
+    .yield-box strong {
+        font-size: 22px;
+        color: #24463A;
+    }
+
+    /* ================= CONTRACTS ================= */
+
+    .contract-list {
+        display: grid;
+        gap: 13px;
+    }
+
+    .contract {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+        background: #f8faf7;
+        border-radius: 12px;
+    }
+
+    .contract h3 {
+        margin: 0 0 5px;
+        font-size: 16px;
+    }
+
+    .contract p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 13px;
+    }
+
+    .contract-price {
+        font-weight: 700;
+        color: #24463A;
+        white-space: nowrap;
+    }
+
+    /* ================= APPLICATIONS ================= */
+
+    .application-list {
+        display: grid;
+        gap: 14px;
+    }
+
+    .application-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        padding: 17px;
+        background: #f8faf7;
+        border: 1px solid #edf0e9;
+        border-radius: 12px;
+    }
+
+    .application-info h3 {
+        margin: 0 0 6px;
+        font-size: 16px;
+        color: #202B22;
+    }
+
+    .application-info p {
+        margin: 3px 0;
+        color: #6b7280;
+        font-size: 13px;
+    }
+
+    .application-price {
+        margin-top: 7px;
+        font-weight: 700;
+        color: #24463A;
+        font-size: 14px;
+    }
+
+    .application-status {
+        text-align: right;
+        flex-shrink: 0;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 6px 11px;
+        border-radius: 20px;
+        background: #fff7e6;
+        color: #9a6700;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .application-date {
+        display: block;
+        margin-top: 7px;
+        color: #8a8f89;
+        font-size: 11px;
+    }
+
+    /* ================= ML INPUTS ================= */
+
+    .input-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 13px;
+    }
+
+    .input-item {
+        background: #f8faf7;
+        border-radius: 11px;
+        padding: 14px;
+    }
+
+    .input-item span {
+        display: block;
+        color: #6b7280;
+        font-size: 12px;
+        margin-bottom: 5px;
+    }
+
+    .input-item strong {
+        font-size: 16px;
+        color: #202B22;
+    }
+
+    /* ================= CROPS ================= */
+
+    .crop-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 12px;
+    }
+
+    .crop-item {
+        background: #f8faf7;
+        border: 1px solid #edf0e9;
+        border-radius: 12px;
+        padding: 16px;
+        text-align: center;
+    }
+
+    .crop-item .emoji {
+        font-size: 26px;
+        margin-bottom: 8px;
+    }
+
+    .crop-item strong {
+        display: block;
+        font-size: 14px;
+    }
+
+    .crop-item small {
+        display: block;
+        margin-top: 4px;
+        color: #6b7280;
+        font-size: 11px;
+    }
+
+    /* ================= STATUS ================= */
+
+    .status-box {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        padding: 17px;
+        background: #f9fafb;
+        border-radius: 12px;
+    }
+
+    .status-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: #e8f5e9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+    }
+
+    .status-box strong {
+        display: block;
+        margin-bottom: 3px;
+    }
+
+    .status-box span {
+        color: #6b7280;
+        font-size: 13px;
+    }
+
+    /* ================= QUICK ACTIONS ================= */
+
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+    }
+
+    .action {
+        text-decoration: none;
+        color: #202B22;
+        padding: 18px;
+        background: #f8faf7;
+        border-radius: 12px;
+        border: 1px solid #edf0e9;
+        transition: 0.2s;
+    }
+
+    .action:hover {
+        transform: translateY(-2px);
+        border-color: #24463A;
+    }
+
+    .action strong {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .action span {
+        color: #6b7280;
+        font-size: 13px;
+    }
+
+    /* ================= EMPTY ================= */
+
+    .empty {
+        padding: 18px;
+        background: #f9fafb;
+        border-radius: 12px;
+        color: #6b7280;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .dashboard-btn {
+        display: inline-block;
+        margin-top: 13px;
+        padding: 10px 16px;
+        background: #24463A;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+    .dashboard-btn:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+
+    /* ================= RESPONSIVE ================= */
+
+    @media (max-width: 1100px) {
+
+        .summary-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .main-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .crop-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .quick-actions {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 800px) {
+
+        .yield-grid,
+        .input-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .application-card {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .application-status {
+            text-align: left;
+        }
+    }
+
+    @media (max-width: 650px) {
+
+        .summary-grid,
+        .quick-actions,
+        .profile-grid,
+        .yield-grid,
+        .input-grid,
+        .crop-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .contract {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+    }
+
+/* Dashboard refinement */
+.dashboard-header { padding:4px 0 22px; }
+.summary-grid { gap:16px; }
+.summary-card { padding:22px 23px; position:relative; overflow:hidden; }
+.summary-card:after { content:""; position:absolute; right:-24px; top:-27px; width:88px;height:88px;border-radius:50%;background:#edf5ed; }
+.summary-card .label { color:#718078; font-weight:600; letter-spacing:.2px; }
+.summary-card h2 { color:#1b513a; font-size:29px; }
+.panel { padding:25px; }
+.recommendation { background:linear-gradient(135deg,#eef7ef,#f8fbf6); border-left:4px solid #4c8962; }
+@media(max-width:900px){.summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.main-grid{grid-template-columns:1fr}}
+@media(max-width:520px){.summary-grid{grid-template-columns:1fr}}
+
+</style>
+
+
+<div class="dashboard">
+
+    <!-- ================= HEADER ================= -->
+
+    <div class="dashboard-header">
+
+        <h1>
+            Welcome, {{ farmer_name }}
+        </h1>
+
+        <p>
+            Your intelligent contract-farming control center.
+            Monitor crop recommendations, production estimates,
+            farm information and contract opportunities.
+        </p>
+
+    </div>
+
+
+    <!-- ================= SUMMARY ================= -->
+
+    <div class="summary-grid">
+
+        <!-- RECOMMENDED CROP -->
+
+        <div class="summary-card">
+
+            <div class="label">
+                🌱 ML Recommended Crop
+            </div>
+
+            <h2>
+
+                {% if recommended_crop %}
+
+                    {{ recommended_crop }}
+
+                {% else %}
+
+                    —
+
+                {% endif %}
+
+            </h2>
+
+            <p>
+                Based on crop-selection inputs
+            </p>
+
+        </div>
+
+
+        <!-- YIELD -->
+
+        <div class="summary-card">
+
+            <div class="label">
+                📈 Predicted Yield
+            </div>
+
+            <h2>
+
+                {% if predicted_yield %}
+
+                    {{ predicted_yield }}
+
+                {% else %}
+
+                    —
+
+                {% endif %}
+
+            </h2>
+
+            <p>
+                From yield prediction module
+            </p>
+
+        </div>
+
+
+        <!-- FARM AREA -->
+
+        <div class="summary-card">
+
+            <div class="label">
+                📐 Farm Area
+            </div>
+
+            <h2>
+
+                {% if farm_area %}
+
+                    {{ farm_area }} Acres
+
+                {% else %}
+
+                    —
+
+                {% endif %}
+
+            </h2>
+
+            <p>
+                Registered farm area
+            </p>
+
+        </div>
+
+
+        <!-- CONTRACTS -->
+
+        <div class="summary-card">
+
+            <div class="label">
+                🤝 Contract Options
+            </div>
+
+            <h2>
+                {{ recommended_contracts|length }}
+            </h2>
+
+            <p>
+                Matching recommended crop
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= MAIN GRID ================= -->
+
+    <div class="main-grid">
+
+        <!-- ML RECOMMENDATION -->
+
+        <div class="panel">
+
+            <h2>
+                🌱 ML Crop Recommendation
+            </h2>
+
+            <div class="panel-subtitle">
+                Recommendation generated from your crop-selection data.
+            </div>
+
+            {% if recommended_crop %}
+
+                <div class="recommendation">
+
+                    <div class="small">
+                        Recommended crop
+                    </div>
+
+                    <h3>
+                        {{ recommended_crop }}
+                    </h3>
+
+                    <p>
+                        The trained crop recommendation model analyzed
+                        the environmental and soil parameters entered
+                        during crop selection.
+                    </p>
+
+                    <div class="ml-badge">
+                        ✓ ML Recommendation Generated
+                    </div>
+
+                </div>
+
+            {% else %}
+
+                <div class="empty">
+
+                    <strong>
+                        Crop recommendation pending.
+                    </strong>
+
+                    <br>
+
+                    Enter your farm conditions and run the
+                    crop recommendation model.
+
+                    <br>
+
+                    <a
+                        href="{{ url_for('crop_selection') }}"
+                        class="dashboard-btn"
+                    >
+                        🌱 Run Crop Recommendation
+                    </a>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- FARM PROFILE -->
+
+        <div class="panel">
+
+            <h2>
+                🚜 Farm Profile
+            </h2>
+
+            <div class="panel-subtitle">
+                Your registered farm information.
+            </div>
+
+            <div class="profile-grid">
+
+                <div class="profile-item">
+
+                    <span>
+                        Farmer
+                    </span>
+
+                    <strong>
+                        {{ farmer_name }}
+                    </strong>
+
+                </div>
+
+
+                <div class="profile-item">
+
+                    <span>
+                        Farm Area
+                    </span>
+
+                    <strong>
+
+                        {% if farm_area %}
+
+                            {{ farm_area }} Acres
+
+                        {% else %}
+
+                            Not added
+
+                        {% endif %}
+
+                    </strong>
+
+                </div>
+
+
+                <div class="profile-item">
+
+                    <span>
+                        Soil Type
+                    </span>
+
+                    <strong>
+
+                        {% if soil_type %}
+
+                            {{ soil_type }}
+
+                        {% else %}
+
+                            Not added
+
+                        {% endif %}
+
+                    </strong>
+
+                </div>
+
+
+                <div class="profile-item">
+
+                    <span>
+                        Soil pH
+                    </span>
+
+                    <strong>
+
+                        {% if soil_ph %}
+
+                            {{ soil_ph }}
+
+                        {% else %}
+
+                            Not added
+
+                        {% endif %}
+
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= YIELD ================= -->
+
+    <div
+        class="panel"
+        style="margin-bottom:25px;"
+    >
+
+        <h2>
+            📈 Yield & Production
+        </h2>
+
+        <div class="panel-subtitle">
+            Estimated production based on your selected crop and farm conditions.
+        </div>
+
+        {% if predicted_yield and total_production %}
+
+            <div class="yield-grid">
+
+                <div class="yield-box">
+
+                    <span>
+                        Selected Crop
+                    </span>
+
+                    <strong>
+                        {{ recommended_crop }}
+                    </strong>
+
+                </div>
+
+
+                <div class="yield-box">
+
+                    <span>
+                        Estimated Yield
+                    </span>
+
+                    <strong>
+                        {{ predicted_yield }}
+                    </strong>
+
+                </div>
+
+
+                <div class="yield-box">
+
+                    <span>
+                        Total Production
+                    </span>
+
+                    <strong>
+                        {{ total_production }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+            <div
+                class="empty"
+                style="margin-top:15px;"
+            >
+
+                ℹ️ Yield estimation has been generated using
+                the current Yield Prediction module.
+
+            </div>
+
+        {% else %}
+
+            <div class="empty">
+
+                <strong>
+                    No yield estimate generated yet.
+                </strong>
+
+                <br>
+
+                Generate a crop recommendation first,
+                then use the Yield Prediction module to
+                estimate yield and total production.
+
+                <br>
+
+                <a
+                    href="{{ url_for('yield_prediction') }}"
+                    class="dashboard-btn"
+                >
+                    📈 Open Yield Prediction
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- ================= ML INPUTS ================= -->
+
+    <div
+        class="panel"
+        style="margin-bottom:25px;"
+    >
+
+        <h2>
+            🧪 Conditions Used for Recommendation
+        </h2>
+
+        <div class="panel-subtitle">
+            Environmental and soil values supplied to the crop recommendation model.
+        </div>
+
+        {% if recommended_crop %}
+
+            <div class="input-grid">
+
+                <div class="input-item">
+
+                    <span>
+                        Nitrogen (N)
+                    </span>
+
+                    <strong>
+
+                        {% if nitrogen is defined and nitrogen is not none %}
+
+                            {{ nitrogen }}
+
+                        {% else %}
+
+                            —
+
+                        {% endif %}
+
+                    </strong>
+
+                </div>
+
+
+                <div class="input-item">
+
+                    <span>
+                        Phosphorus (P)
+                    </span>
+
+                    <strong>
+
+                        {% if phosphorus is defined and phosphorus is not none %}
+
+                            {{ phosphorus }}
+
+                        {% else %}
+
+                            —
+
+                        {% endif %}
+
+                    </strong>
+
+                </div>
+
+
+                <div class="input-item">
+
+                    <span>
+                        Potassium (K)
+                    </span>
+
+                    <strong>
+
+                        {% if potassium is defined and potassium is not none %}
+
+                            {{ potassium }}
+
+                        {% else %}
+
+                            —
+
+                        {% endif %}
+
+                    </strong>
+
+                </div>
+
+
+                <div class="input-item">
+
+                    <span>
+                        Temperature
+                    </span>
+
+                    <strong>
+
+                        {% if temperature is defined and temperature is not none %}
+
+                            {{ temperature }} °C
+
+                        {% else %}
+
+                            —
+
+                        {% endif %}
+
+                    </strong>
+
+                </div>
+
+
+                <div class="input-item">
+
+                    <span>
+                        Humidity
+                    </span>
+
+                    <strong>
+
+                        {% if humidity is defined and humidity is not none %}
+
+                            {{ humidity }} %
+
+                        {% else %}
+
+                            —
+
+                        {% endif %}
+
+                    </strong>
+
+                </div>
+
+
+                <div class="input-item">
+
+                    <span>
+                        Rainfall
+                    </span>
+
+                    <strong>
+
+                        {% if rainfall is defined and rainfall is not none %}
+
+                            {{ rainfall }} mm
+
+                        {% else %}
+
+                            —
+
+                        {% endif %}
+
+                    </strong>
+
+                </div>
+
+            </div>
+
+        {% else %}
+
+            <div class="empty">
+
+                🧪 Your soil and environmental parameters
+                will appear here after you run the crop
+                recommendation model.
+
+                <br>
+
+                <a
+                    href="{{ url_for('crop_selection') }}"
+                    class="dashboard-btn"
+                >
+                    🌱 Enter Farm Conditions
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- ================= CONTRACTS ================= -->
+
+    <div
+        class="panel"
+        style="margin-bottom:25px;"
+    >
+
+        <h2>
+            🤝 Matching Contract Opportunities
+        </h2>
+
+        <div class="panel-subtitle">
+            Contracts matching your ML-recommended crop.
+        </div>
+
+        {% if recommended_contracts %}
+
+            <div class="contract-list">
+
+                {% for contract in recommended_contracts %}
+
+                    <div class="contract">
+
+                        <div>
+
+                            <h3>
+                                {{ contract.company }}
+                            </h3>
+
+                            <p>
+                                {{ contract.crop }}
+                                •
+                                {{ contract.location }}
+                            </p>
+
+                        </div>
+
+                        <div class="contract-price">
+
+                            ₹{{ "{:,.0f}".format(contract.price) }}
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% elif recommended_crop %}
+
+            <div class="empty">
+
+                No matching contracts are currently available
+                for <strong>{{ recommended_crop }}</strong>.
+
+                <br><br>
+
+                Try <strong>Search & Apply</strong> to explore
+                available contract opportunities.
+
+                <br>
+
+                <a
+                    href="{{ url_for('search_apply') }}"
+                    class="dashboard-btn"
+                >
+                    🤝 Search Contracts
+                </a>
+
+            </div>
+
+        {% else %}
+
+            <div class="empty">
+
+                🤝 Matching contracts will appear here after
+                your ML crop recommendation is generated.
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- ============================================================
+         MY APPLICATIONS - NEW
+         ============================================================ -->
+
+    <div
+        class="panel"
+        style="margin-bottom:25px;"
+    >
+
+        <h2>
+            📋 My Applications
+        </h2>
+
+        <div class="panel-subtitle">
+            Track the farming contracts you have applied for.
+        </div>
+
+
+        {% if applications %}
+
+            <div class="application-list">
+
+                {% for application in applications %}
+
+                    <div class="application-card">
+
+                        <div class="application-info">
+
+                            <h3>
+                                {{ application.contract.company }}
+                            </h3>
+
+                            <p>
+                                🌱
+                                {{ application.contract.crop }}
+                                &nbsp; • &nbsp;
+                                📍
+                                {{ application.contract.location }}
+                            </p>
+
+                            <div class="application-price">
+                                💰
+                                ₹{{ "{:,.0f}".format(application.contract.price) }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="application-status">
+
+                            <span class="status-badge">
+                                {{ application.status }}
+                            </span>
+
+                            <span class="application-date">
+
+                                Applied:
+
+                                {{ application.applied_at.strftime("%d %b %Y") }}
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty">
+
+                <strong>
+                    No applications yet.
+                </strong>
+
+                <br>
+
+                You have not applied for any farming contracts.
+
+                <br>
+
+                <a
+                    href="{{ url_for('search_apply') }}"
+                    class="dashboard-btn"
+                >
+                    🤝 Search & Apply
+
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- ================= SUPPORTED CROPS ================= -->
+
+    <div
+        class="panel"
+        style="margin-bottom:25px;"
+    >
+
+        <h2>
+            🌾 Supported Crops
+        </h2>
+
+        <div class="panel-subtitle">
+            Crops currently supported by the contract-farming platform.
+        </div>
+
+        <div class="crop-grid">
+
+            <div class="crop-item">
+
+                <div class="emoji">
+                    🌾
+                </div>
+
+                <strong>
+                    Rice
+                </strong>
+
+                <small>
+                    Paddy crop
+                </small>
+
+            </div>
+
+
+            <div class="crop-item">
+
+                <div class="emoji">
+                    🌾
+                </div>
+
+                <strong>
+                    Wheat
+                </strong>
+
+                <small>
+                    Cereal crop
+                </small>
+
+            </div>
+
+
+            <div class="crop-item">
+
+                <div class="emoji">
+                    🌽
+                </div>
+
+                <strong>
+                    Maize
+                </strong>
+
+                <small>
+                    Cereal crop
+                </small>
+
+            </div>
+
+
+            <div class="crop-item">
+
+                <div class="emoji">
+                    🧶
+                </div>
+
+                <strong>
+                    Cotton
+                </strong>
+
+                <small>
+                    Fibre crop
+                </small>
+
+            </div>
+
+
+            <div class="crop-item">
+
+                <div class="emoji">
+                    🍅
+                </div>
+
+                <strong>
+                    Tomato
+                </strong>
+
+                <small>
+                    Vegetable crop
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= STATUS ================= -->
+
+    <div
+        class="panel"
+        style="margin-bottom:25px;"
+    >
+
+        <h2>
+            📊 Farming Workflow Status
+        </h2>
+
+        <div class="panel-subtitle">
+            Current status of your farming-management workflow.
+        </div>
+
+        <div class="status-box">
+
+            <div class="status-icon">
+
+                {% if recommended_crop %}
+
+                    ✓
+
+                {% else %}
+
+                    !
+
+                {% endif %}
+
+            </div>
+
+            <div>
+
+                {% if recommended_crop %}
+
+                    <strong>
+                        Crop recommendation completed
+                    </strong>
+
+                    <span>
+
+                        Your ML recommendation is
+                        {{ recommended_crop }}.
+
+                        You can now explore yield prediction,
+                        farming schedules and matching contracts.
+
+                    </span>
+
+                {% else %}
+
+                    <strong>
+                        Crop recommendation pending
+                    </strong>
+
+                    <span>
+
+                        Complete the Crop Selection module
+                        to generate your ML recommendation.
+
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= QUICK ACTIONS ================= -->
+
+    <div class="panel">
+
+        <h2>
+            ⚡ Quick Actions
+        </h2>
+
+        <div class="panel-subtitle">
+            Continue with the next farming-management module.
+        </div>
+
+        <div class="quick-actions">
+
+            <a
+                href="{{ url_for('crop_selection') }}"
+                class="action"
+            >
+
+                <strong>
+                    🌱 Crop Selection
+                </strong>
+
+                <span>
+                    Run ML crop recommendation
+                </span>
+
+            </a>
+
+
+            <a
+                href="{{ url_for('search_apply') }}"
+                class="action"
+            >
+
+                <strong>
+                    🤝 Search & Apply
+                </strong>
+
+                <span>
+                    Find farming contracts
+                </span>
+
+            </a>
+
+
+            <a
+                href="{{ url_for('yield_prediction') }}"
+                class="action"
+            >
+
+                <strong>
+                    📈 Yield Prediction
+                </strong>
+
+                <span>
+                    Estimate production
+                </span>
+
+            </a>
+
+
+            <a
+                href="{{ url_for('farming_schedule') }}"
+                class="action"
+            >
+
+                <strong>
+                    📅 Farming Schedule
+                </strong>
+
+                <span>
+                    View crop growth stages
+                </span>
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

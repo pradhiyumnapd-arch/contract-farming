@@ -1,0 +1,501 @@
+{% extends "base.html" %}
+
+{% block title %}Farming Schedule{% endblock %}
+
+{% block content %}
+
+<style>
+    .schedule-page {
+        width: 100%;
+        max-width: 980px;
+    }
+
+    .page-header {
+        margin-bottom: 28px;
+    }
+
+    .page-header h1 {
+        margin: 0 0 8px;
+        font-size: 34px;
+        letter-spacing: -0.5px;
+    }
+
+    .page-header p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 15px;
+        line-height: 1.6;
+    }
+
+    .schedule-card {
+        background: white;
+        border-radius: 18px;
+        padding: 28px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+        margin-bottom: 24px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .schedule-card h2 {
+        margin: 0 0 8px;
+        font-size: 21px;
+    }
+
+    .card-description {
+        margin: 0 0 24px;
+        color: #6b7280;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 18px;
+        align-items: end;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .form-group select {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 13px 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        font-size: 15px;
+        background: white;
+        color: #202B22;
+        outline: none;
+    }
+
+    .form-group select:focus {
+        border-color: #24463A;
+        box-shadow: 0 0 0 3px rgba(36,70,58,0.08);
+    }
+
+    .form-help {
+        margin-top: 7px;
+        font-size: 12px;
+        color: #6b7280;
+    }
+
+    .submit-btn {
+        padding: 13px 24px;
+        border: none;
+        border-radius: 10px;
+        background: #24463A;
+        color: white;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .submit-btn:hover {
+        opacity: 0.92;
+    }
+
+    .schedule-result {
+        background: white;
+        border-radius: 18px;
+        padding: 30px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+        border: 1px solid #e5e7eb;
+    }
+
+    .result-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+        margin-bottom: 28px;
+        padding-bottom: 22px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .result-label {
+        margin: 0 0 7px;
+        color: #6b7280;
+        font-size: 13px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+    }
+
+    .crop-name {
+        margin: 0;
+        font-size: 30px;
+        font-weight: 700;
+        color: #202B22;
+    }
+
+    .schedule-count {
+        background: #F1F3EA;
+        color: #24463A;
+        border-radius: 999px;
+        padding: 8px 13px;
+        font-size: 13px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .schedule-intro {
+        margin: -8px 0 25px;
+        color: #6b7280;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .schedule-list {
+        display: grid;
+        gap: 14px;
+    }
+
+    .schedule-item {
+        display: grid;
+        grid-template-columns: 145px 1fr;
+        gap: 22px;
+        padding: 20px;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        background: #fcfcfa;
+    }
+
+    .schedule-stage {
+        font-weight: 700;
+        color: #24463A;
+        line-height: 1.4;
+    }
+
+    .schedule-task {
+        color: #4b5563;
+        line-height: 1.65;
+        font-size: 14px;
+    }
+
+    .tips-box {
+        margin-top: 24px;
+        padding: 20px;
+        border-radius: 14px;
+        background: #F1F3EA;
+        border: 1px solid #D8DECB;
+    }
+
+    .tips-box h3 {
+        margin: 0 0 10px;
+        font-size: 16px;
+        color: #24463A;
+    }
+
+    .tips-box p {
+        margin: 0;
+        color: #4b5563;
+        font-size: 14px;
+        line-height: 1.65;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 30px 15px;
+        color: #6b7280;
+    }
+
+    @media (max-width: 700px) {
+
+        .schedule-page {
+            max-width: 100%;
+        }
+
+        .schedule-card,
+        .schedule-result {
+            padding: 22px;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .submit-btn {
+            width: 100%;
+        }
+
+        .result-top {
+            flex-direction: column;
+        }
+
+        .schedule-item {
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+
+        .crop-name {
+            font-size: 26px;
+        }
+    }
+
+/* Farming calendar refinement */
+.schedule-page,.farming-page { max-width:1280px; }
+.schedule-card,.schedule-form,.schedule-result { background:#fff; border:1px solid #e7ede6; border-radius:17px; box-shadow:var(--shadow); }
+
+</style>
+
+
+<div class="schedule-page">
+
+    <div class="page-header">
+
+        <h1>Farming Schedule</h1>
+
+        <p>
+            Get a crop-specific cultivation plan covering land preparation,
+            planting, irrigation, nutrient management, crop protection and harvesting.
+        </p>
+
+    </div>
+
+
+    <div class="schedule-card">
+
+        <h2>Generate Crop Schedule</h2>
+
+        <p class="card-description">
+            Select any crop supported by the machine-learning crop recommendation
+            system to view its recommended farming stages.
+        </p>
+
+
+        <form method="POST">
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="crop">
+                        Select Crop
+                    </label>
+
+                    <select id="crop" name="crop" required>
+
+                        <option value="">
+                            Select a crop
+                        </option>
+
+                        <option value="Rice" {% if crop == "Rice" %}selected{% endif %}>
+                            Rice
+                        </option>
+
+                        <option value="Maize" {% if crop == "Maize" %}selected{% endif %}>
+                            Maize
+                        </option>
+
+                        <option value="Chickpea" {% if crop == "Chickpea" %}selected{% endif %}>
+                            Chickpea
+                        </option>
+
+                        <option value="Kidney Beans" {% if crop == "Kidney Beans" %}selected{% endif %}>
+                            Kidney Beans
+                        </option>
+
+                        <option value="Pigeon Peas" {% if crop == "Pigeon Peas" %}selected{% endif %}>
+                            Pigeon Peas
+                        </option>
+
+                        <option value="Moth Beans" {% if crop == "Moth Beans" %}selected{% endif %}>
+                            Moth Beans
+                        </option>
+
+                        <option value="Mung Bean" {% if crop == "Mung Bean" %}selected{% endif %}>
+                            Mung Bean
+                        </option>
+
+                        <option value="Black Gram" {% if crop == "Black Gram" %}selected{% endif %}>
+                            Black Gram
+                        </option>
+
+                        <option value="Lentil" {% if crop == "Lentil" %}selected{% endif %}>
+                            Lentil
+                        </option>
+
+                        <option value="Pomegranate" {% if crop == "Pomegranate" %}selected{% endif %}>
+                            Pomegranate
+                        </option>
+
+                        <option value="Banana" {% if crop == "Banana" %}selected{% endif %}>
+                            Banana
+                        </option>
+
+                        <option value="Mango" {% if crop == "Mango" %}selected{% endif %}>
+                            Mango
+                        </option>
+
+                        <option value="Grapes" {% if crop == "Grapes" %}selected{% endif %}>
+                            Grapes
+                        </option>
+
+                        <option value="Watermelon" {% if crop == "Watermelon" %}selected{% endif %}>
+                            Watermelon
+                        </option>
+
+                        <option value="Muskmelon" {% if crop == "Muskmelon" %}selected{% endif %}>
+                            Muskmelon
+                        </option>
+
+                        <option value="Apple" {% if crop == "Apple" %}selected{% endif %}>
+                            Apple
+                        </option>
+
+                        <option value="Orange" {% if crop == "Orange" %}selected{% endif %}>
+                            Orange
+                        </option>
+
+                        <option value="Papaya" {% if crop == "Papaya" %}selected{% endif %}>
+                            Papaya
+                        </option>
+
+                        <option value="Coconut" {% if crop == "Coconut" %}selected{% endif %}>
+                            Coconut
+                        </option>
+
+                        <option value="Cotton" {% if crop == "Cotton" %}selected{% endif %}>
+                            Cotton
+                        </option>
+
+                        <option value="Jute" {% if crop == "Jute" %}selected{% endif %}>
+                            Jute
+                        </option>
+
+                        <option value="Coffee" {% if crop == "Coffee" %}selected{% endif %}>
+                            Coffee
+                        </option>
+
+                        <option value="Wheat" {% if crop == "Wheat" %}selected{% endif %}>
+                            Wheat
+                        </option>
+
+                        <option value="Tomato" {% if crop == "Tomato" %}selected{% endif %}>
+                            Tomato
+                        </option>
+
+                    </select>
+
+                    <span class="form-help">
+                        24 crops are currently supported.
+                    </span>
+
+                </div>
+
+
+                <button type="submit" class="submit-btn">
+                    Generate Schedule
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    {% if schedule %}
+
+    <div class="schedule-result">
+
+        <div class="result-top">
+
+            <div>
+
+                <p class="result-label">
+                    Cultivation Plan
+                </p>
+
+                <h2 class="crop-name">
+                    {{ crop }}
+                </h2>
+
+            </div>
+
+            <div class="schedule-count">
+                {{ schedule|length }} farming stages
+            </div>
+
+        </div>
+
+
+        <p class="schedule-intro">
+            Follow these stages as a general cultivation guide. Actual timing,
+            irrigation and nutrient requirements can vary according to soil,
+            climate, variety and local agricultural conditions.
+        </p>
+
+
+        <div class="schedule-list">
+
+            {% for item in schedule %}
+
+            <div class="schedule-item">
+
+                <div class="schedule-stage">
+                    {{ item.day }}
+                </div>
+
+                <div class="schedule-task">
+                    {{ item.task }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+
+        {% if tips %}
+
+        <div class="tips-box">
+
+            <h3>
+                Important Farming Tip
+            </h3>
+
+            <p>
+                {{ tips }}
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+    {% else %}
+
+    <div class="schedule-result">
+
+        <div class="empty-state">
+
+            <strong>Select a crop to generate its farming schedule.</strong>
+
+            <p>
+                The schedule will provide crop-specific cultivation stages
+                from preparation through harvesting.
+            </p>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
